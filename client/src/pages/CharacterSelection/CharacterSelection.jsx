@@ -9,6 +9,7 @@ import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
  import character from "../../services/database"
 import { faComment } from '@fortawesome/free-solid-svg-icons';
+import config from "../../config"; 
 const serverUrl = "http://localhost:3005";
 
 
@@ -31,7 +32,7 @@ const CharacterSelection = () => {
         const fetchCharacters = async () => {
             console.log("kiem tra token "+ currentUser.access_token)
             try {
-                const response = await fetch("https://ec5d-117-2-255-206.ngrok-free.app/api/v1/characters/users", {
+                const response = await fetch(`${config.API_BASE_URL}/api/v1/characters/users`, {
                     method: "GET",
                     credentials: "include",
                     headers: {
@@ -84,6 +85,7 @@ const CharacterSelection = () => {
             }
             {
                  characters["characters"] && characters["characters"].map((character, index) => (
+                
                     <div key={index}>
                         <div key={index}
                             className={"characterSelection-description " + (selectedCharacter.id === character.id ? "characterSelection-description__selected" : "")}
@@ -128,7 +130,7 @@ const CharacterSelection = () => {
                                 <img className="characterSelection-item-img" src={character.profile_image} alt={character.name} />
                                 <span className="characterSelection-item-name">{character.name}</span>
                                 {
-                                    (character.isLocked) ? <span className="characterSelection-item-locked">
+                                    (!character.own) ? <span className="characterSelection-item-locked">
                                         <FontAwesomeIcon icon={faLock} className="characterSelection-item-locked-icon" />
                                     </span> : null
                                 }

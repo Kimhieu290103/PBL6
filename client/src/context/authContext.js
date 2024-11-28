@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import config from "../config"
 import { createContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
@@ -17,7 +17,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const login = async (inputs) => {
     console.log("haha")
-    const res = await axios.post("https://ec5d-117-2-255-206.ngrok-free.app/api/v1/auth/login", inputs, {
+    const res = await axios.post(`${config.API_BASE_URL}/api/v1/auth/login`, inputs, {
       withCredentials: true,
     });
     setCurrentUser(res.data)

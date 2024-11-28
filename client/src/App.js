@@ -3,7 +3,7 @@ import Register from "./pages/register/Register"; // Có thể bỏ nếu không
 import Chat from "./pages/DaiVietChat/DaiVietChat";
 import CharacterSelection from "./pages/CharacterSelection/CharacterSelection";
 import PaymentPage from "./pages/PaymentPage/PaymentPage"
-
+import ChangePass from "./pages/ChangePass/ChangePass"
 import {
   createBrowserRouter,
   RouterProvider,
@@ -56,6 +56,14 @@ function App() {
           path: "/chat/:id",
           element: <Chat />,
         },
+        {
+          path: "/changepass",
+          element: <ChangePass />,
+        },
+        {
+          path: "/payment/:id", // Nếu không cần, có thể xóa dòng này
+          element: <PaymentPage />,
+        },
       ],
     },
     {
@@ -66,10 +74,7 @@ function App() {
       path: "/register", // Nếu không cần, có thể xóa dòng này
       element: <Register />,
     },
-    {
-      path: "/payment/:id", // Nếu không cần, có thể xóa dòng này
-      element: <PaymentPage />,
-    },
+
   ]);
 
   return (

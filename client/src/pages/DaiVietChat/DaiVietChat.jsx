@@ -10,6 +10,7 @@ import downloadAll from "../../services/downloader.js";
 import Video from "../../components/Video/Video.jsx";
 import { AuthContext } from "../../context/authContext.js";
 import axios from "axios";
+import config from "../../config.js"
 const serverUrl = "http://localhost:3005";
 const API_BASE_URL = 'http://1a40-2402-9d80-40d-8d02-365e-f4b-f6c1-eed8.ngrok-free.app/ask';
 
@@ -30,12 +31,13 @@ const DaiVietChat = () => {
     const [character, setCharacter] = useState({});
     const [messages, setMessages] = useState([]);
     const [inputMessage, setInputMessage] = useState('');
+    const [messageRespone, setMessageRespone]= useState({})
     const inputRef = useRef()
     const { currentUser } = useContext(AuthContext); 
     useEffect(() => {
         console.log("Character Chat: ", character_chat);
     }, [character_chat]);
-    
+   
     useEffect(() => {
         const fetchCharacter = async () => {
             try {
@@ -94,35 +96,66 @@ const DaiVietChat = () => {
         };
         setMessages([...chatMessages, skeletonMessage]);
         const payload = {
-            text: newMessage.text, // Assuming newMessage has a 'text' field
+           
+           // text: newMessage.text, // Assuming newMessage has a 'text' field
             // name: newMessage.name || 'DefaultName' // Use a default name if not provided
-            character_id : 1
+            character_id: character_chat.id,
+            question: newMessage.text
            
         };
-        console.log(payload)
+        console.log( "payload" , payload)
         const response = await axios.post(
-            "http://1a40-2402-9d80-40d-8d02-365e-f4b-f6c1-eed8.ngrok-free.app/ask",
+            `${config.API_BASE_URL}/api/v1/chat`,
             payload,
             {
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${currentUser.access_token}`
                 },
                 // Nếu bạn cần gửi cookie hoặc thông tin xác thực
             }
         );
           
-        const data = await response.json();
+        const data = await response.data;
         const newMessageReply = {
             text: data.answer,
             sentTime: new Date().toISOString(), // Use current time for the reply message
-            sender: 'Chat Bot'
+            sender: 'Chat Bot',
+            respone_id: data.log_id
         };
-        console.log(data.answer)
+        console.log(data.log_id)
         setMessages([...chatMessages, newMessageReply]);
+
       //  textToSpeech(data.answer);
     }
 
-   
+    const handleFeedback = async (responeId, feedbackType) => {
+        console.log("đây là id của tin nhắn phản hồi: ",responeId)
+        try {
+            const payload = {
+                id: responeId,
+                feedback: feedbackType,
+            };
+    
+            const response = await axios.put(
+                `${config.API_BASE_URL}/api/v1/log/feedback`,
+                payload,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${currentUser.access_token}` // Sử dụng token từ context
+                    },
+                }
+            );
+    
+            console.log("Feedback sent successfully:", response.data);
+            alert("Cảm ơn bạn đã phản hồi!");
+        } catch (error) {
+            console.error("Error sending feedback:", error);
+            alert("Đã xảy ra lỗi khi gửi phản hồi!");
+        }
+    };
+    
     const [isRecording, setIsRecording] = useState(false);
 
     const handleRecord = () => {
@@ -222,10 +255,10 @@ const DaiVietChat = () => {
                                                         )
                                                     }
                                                      <div className="chatBox-message-buttons">
-                                                     <button  title="Like">
+                                                     <button  title="Like" onClick={() => handleFeedback(message.respone_id, "like")}>
                                                             <FontAwesomeIcon icon={faThumbsUp} />
                                                         </button>
-                                                        <button  title="Dislike">
+                                                        <button  title="Dislike" onClick={() => handleFeedback(message.respone_id, "dislike")}>
                                                             <FontAwesomeIcon icon={faThumbsDown} />
                                                         </button>
                                                         <button  title="Copy">

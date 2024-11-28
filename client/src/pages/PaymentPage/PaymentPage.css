@@ -117,3 +117,33 @@
 .payment-page__content__methods__item.active {
     border: 1px solid #000;
 }
+.payment-page__center-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* Tùy chỉnh khoảng cách phía trên */
+    margin-left: 900px;
+}
+
+.payment-page__center-button__btn {
+    padding: 10px 20px;
+    background-color: #45a049;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.payment-page__center-button__btn:hover {
+    background-color: #2d8731;
+}
+.payment-page__content {
+    margin-top: 250px; /* Tùy chỉnh khoảng cách phía trên */
+}
+.product-image {
+    margin-left: 5px;
+    width: 23px; /* Kích thước ảnh */
+    height: 23px; /* Kích thước ảnh */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+  }
