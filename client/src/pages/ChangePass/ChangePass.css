@@ -1,9 +1,14 @@
-/* body{
-    background:url("../../assets/images/Background.png") center/cover no-repeat; 
-} */
+
+.hange-password-page {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:url("../../assets/images/Background.png") center/cover no-repeat;
+}
 .container {
     height: 100%;
-    max-width: 400px;
+    max-width: 900px;
     margin: 150px auto;
     padding: 20px;
     border: 1px solid #ddd;
@@ -18,12 +23,15 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+    background-color: #fff;
+   
   }
   
   .input-group {
     display: flex;
     flex-direction: column;
     text-align: left;
+    background-color: #fff;
   }
   .input-style {
     border: 1px solid black; /* Đường viền mỏng màu đen */
@@ -31,6 +39,7 @@
     padding: 5px; /* Khoảng cách bên trong */
     border-radius: 5px; /* Bo góc */
      margin-Top:10px
+     
   }
   button {
     background-color: #938eef;

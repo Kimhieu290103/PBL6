@@ -26,7 +26,7 @@ const Login = () => {
       });
       navigate("/"); // Điều hướng đến trang chủ
     } catch (err) {
-      setErr(err.message); // Hiển thị lỗi nếu có
+      setErr("Sai tài khoản hoặc mật khẩu"); // Hiển thị lỗi nếu có
     }
   };
   const handleLoginClick = () => {
@@ -36,7 +36,7 @@ const Login = () => {
     <div className="login">
       <div className="card">
         <div className="left">
-          <h1>Character AI.</h1>
+          <h1>Character AI</h1>
           <p>
           Khám phá lịch sử Việt Nam qua những cuộc trò chuyện độc đáo cùng các nhân vật lịch sử! Đăng nhập để bắt đầu hành trình khám phá quá khứ.
           </p>
@@ -50,7 +50,14 @@ const Login = () => {
           <form>
             <input type="text" placeholder="Tên tài khoản" name ="email" onChange={handleChange}/>
             <input type="password" placeholder="Mật khẩu" name="password" onChange={handleChange}/>
-            {err && err}
+            {err &&
+            <div style={{
+              fontSize: '14px',
+              color:'red'
+            }}>
+              {err}
+            </div>
+             }
             <button onClick={handleLogin}>Đăng nhập</button>
           </form>
         </div>

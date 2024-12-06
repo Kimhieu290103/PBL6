@@ -16,7 +16,7 @@ export const AuthContextProvider = ({ children }) => {
   });
 
   const login = async (inputs) => {
-    console.log("haha")
+   // console.log("haha")
     const res = await axios.post(`${config.API_BASE_URL}/api/v1/auth/login`, inputs, {
       withCredentials: true,
     });
@@ -31,6 +31,12 @@ export const AuthContextProvider = ({ children }) => {
   //     navigate("/login");
   //   }
   // }, [currentUser, navigate]);
+  const logout = () => {
+    console.log("day la logout !!!!!!!!!!!!!!!!!!")
+    setCurrentUser(null); // Đặt currentUser về null
+    localStorage.removeItem("user"); // Xóa thông tin người dùng khỏi localStorage
+  };
+
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem("user", JSON.stringify(currentUser));
@@ -40,7 +46,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [currentUser]);
 
   return (
-    <AuthContext.Provider value={{ currentUser, login }}>
+    <AuthContext.Provider value={{ currentUser, login ,logout }}>
       {children}
     </AuthContext.Provider>
   );

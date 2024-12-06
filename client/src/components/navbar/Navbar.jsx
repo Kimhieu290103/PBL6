@@ -18,7 +18,9 @@ import { DarkModeContext } from "../../context/darkModeContext";
 import axios from "axios";
 import config from "../../config"
 import coinImage from '../../assets/rice.png'
+import { AuthContext } from "../../context/authContext";
 const Navbar = () => {
+  const { logout } = useContext(AuthContext);
   const { toggle, darkMode } = useContext(DarkModeContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userData, setUserData] = useState({});
@@ -28,6 +30,7 @@ const Navbar = () => {
   };
 
   const navigate = useNavigate()
+
   useEffect(() => {
     const fetchUserData = async () => {
       console.log("đây là hàm gọi để biêys giá")
@@ -78,7 +81,14 @@ const handleUpdateUser = () => {
 };
 
 const handleChangePassword = () => {
-  navigate("/change-password");
+  navigate("/changepass");
+};
+const handleChangeRecharge = () => {
+  navigate("/recharge");
+};
+const handeLogout = () => {
+   logout(); // Xóa thông tin người dùng
+    navigate("/login"); // Chuyển hướng về trang login
 };
 console.log({currentUser})
   return (
@@ -88,11 +98,11 @@ console.log({currentUser})
           <span>Đại Việt</span>
         </Link>
         {/* <HomeOutlinedIcon onClick={handleHome} /> */}
-        {/* {darkMode ? (
-          <WbSunnyOutlinedIcon onClick={toggle} />
-        ) : (
+        {darkMode ?(
           <DarkModeOutlinedIcon onClick={toggle} />
-        )} */}
+        ): (
+          <WbSunnyOutlinedIcon onClick={toggle} />
+        ) }
         {/* < ChatBubbleOutlineIcon  onClick={handleSelect}/> */}
         {/* <div className="search">
           <SearchOutlinedIcon />
@@ -109,7 +119,7 @@ console.log({currentUser})
         {/* <NotificationsOutlinedIcon /> */}
         <div className="user">
           <img
-            src="https://cdn.kona-blue.com/upload/kona-blue_com/post/images/2024/09/23/478/anh-dai-dien-zalo-11.jpg"
+            src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBhARBxMRFRITFhcVFRgVERUSFRoZFhgWGBUTFRgYHSggGBolGxYVITEiJSkrLi4uFyIzODMsNygtLisBCgoKDg0OFRAQFS0dHR0rNy0tKy0tLS0tNy0tNy0rKzctKy0rKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAOEA4QMBIgACEQEDEQH/xAAbAAEAAgMBAQAAAAAAAAAAAAAABAUCAwYBB//EADMQAQACAQICBgkEAgMAAAAAAAABAgMEEQUhEjFBcbHBEyJRYYGRodHwFDI04ULxI3KC/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAEC/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwD6YA0yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAypS2S21I3kGL2ImZ2hMpw3NaPWmI+srHT6bHgr6kc+2e00xW4uH57/u2r39fyhvrwuNvWt8oWImriunhdey0/JhbheSI9S0T3xMLQNMUWXS58X76zt7Y5+DQ6RF1Ohx5o3ryt7Y8zTFKM8uK+G+2SOf5zhgqAAAAAAAAAAAAgAAAAAAvNDp4wYY3/dPOfsp9PXp56xPbMOgStQARQAAAAAGjWaeNRi27Y6pUcxMTtPY6NU8VxdDPFo/y8Y/IWJUEBWQAAAAAAAAAAAAAAAEnh8b6yvx8JXal4b/ADK/HwldJWoAIoAAAAAAh8Vp0tLv7JifLzTEbiO36O2/u8YBSANMAAAAAAAAAAoAAAAACTw7+ZX4+ErtR6CdtZTv8pXiVYAIoAAAAAApeJWtOrtEzyjbb5QulHrp31l+/wAoWJUcBUAAAAAAAAABAAAAAAG/Rxb9TWYieuOxetOjrFNLTo+yJ+fNuZagAKAAAAAAKHVxP6m3S3658V8i8SpFtJMz2bTHzWJYpQFZAAAAAAAAABQAAAAAF5w+/T0lfdy+SQruEZOVqz3+U+SxZaAAAAAAAAELit+jpto7Zj7+SaqeLZOlmisdkfWfyFhUEBWQAAAAAAAAAAAAAAAGzT5rYMsWqu9NmjUYYtEbe7rUCz4Rk5Wr8fKfJKsWICKAAAAAA06vP+nxb7b89vYpMl7Zck2t1yn8YvzrWPfPlHmrWolABAAAAAAAAAAAAAAAABu0ub0GeJ7Oqe6WkB0kTvHIQuFZLXwTFv8AGdo+yay0AAAAAjcQvamlno93zBV6zL6bUTMdXVHdDQDTIAAAAAAAAAAAIAAAAAAACrfhUbabvtPlCaj8Pp0NJXfv+c7pDLQAAAAj8QjpaO3wn5TCQ156ekwWiO2JgHPgNMgAgAAAAAAAAAKAAAAAAMqUnJeIr1zyKUte21ImZ9y10Oi9DPSyfu8P7CJlaxWsRHZyegy0AAAAAAoNVj9FqLR7+XdPU1LrW6SNRXevK0dX2lUZcd8VtskTE/nU1GawAAAAAAAAAAAEAAB7ETadq9adp+G3vzzco9nb/QuINaze21Y3n3J+n4ba3PPy90daww4ceGNscbePxlsTVxhixY8NdscRDMEUAAAAAAAAY5KUyV2vETDIBW6jhnbgn4T5Sr8mO2O22SJiXRMMmOmWu2SImF1Mc8LHUcNmOenn4T5SgXpaltrxtPvVMYgCAAAAAPY5zyB4l6bQ5M3O3Kv1nuhK0Wgim1s3OfZ2R95T01rGrBp8WCP+OPj2toIoAAAAAAAAAAAAAAAAwy4ceau2SN/zsZgKnU8Pvj54vWj6/wBoLpETWaKueN6crfSe9dTFMMrVtS0xblMMVZAAFlwvTxPr3/8APnKurE2tER28nQ46RjxxFeqI2StRkAigAAAAAAAAAAAAAAAAAAAAAIPE9PF8fTr1x1++FS6Tr63P58fos1q+yf8ASxK1gKjdpP5NP+0L4EqwARQAAAAAAAAAAAAAAAAAAAAABS8S/mW+HhALEqKAqP/Z"
             alt=""
           />
           <span>User</span>
@@ -118,7 +128,8 @@ console.log({currentUser})
             <div className="dropdown">
               <div onClick={handleUpdateUser}>Update user</div>
               <div onClick={handleChangePassword}>Change password</div>
-              <div >Log out</div>
+              <div onClick={handleChangeRecharge}>Recharge</div>
+              <div onClick={handeLogout}>Log out</div>
             </div>
           )}
         </div>

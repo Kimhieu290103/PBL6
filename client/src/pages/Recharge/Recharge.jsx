@@ -8,6 +8,7 @@ import { AuthContext } from "../../context/authContext.js";
 import axios from "axios";
 import config from "../../config.js"
 import coinImage from '../../assets/rice.png';
+import { v4 as uuidv4 } from "uuid"; 
 const serverUrl = "http://localhost:3005";
 
 const toVND = (price) => {
@@ -18,6 +19,41 @@ const toVND = (price) => {
     }
 }
 
+const my_bank = {
+    NAME :"Tran Kim Hieu",
+    BANK_ID : "BIDV",
+    ACCOUNT_NO: "V3CASS5601711413"
+
+}
+// https://script.google.com/macros/s/AKfycbwsCShQyL7HQmomx9yMcwihyPXjonm3d7SJnM6Wfih09xSz30QQSh3BSAWm6KC5NDNjJA/exec API DE GOI KIEM TRA GIAO DICH
+// so tai khoan ao V3CASS5601711413
+// Danh sách các gói thanh toán
+const paymentPackages = [
+    {
+        id: 1,
+        coins: 2000,
+        price: 2000,
+        content: "nap tien 10.000 đong vao web DAIVIET"
+    },
+    {
+        id: 2,
+        coins: 20000,
+        price: 20000,
+         content: "nap tien 20.000 đong vao web DAIVIET"
+    },
+    {
+        id: 3,
+        coins:  50000,
+        price: 50000,
+         content: "nap tien 50.000 đong vao web DAIVIET"
+    },
+    {
+        id: 4,
+        coins:  100000,
+        price: 100000,
+         content: "nap tien 100.000 đong vao web DAIVIET"
+    },
+];
 const paymentMethods = [
     {
         id: 1,
@@ -51,87 +87,91 @@ const paymentMethods = [
     }
 ]
 
-const PaymentPage = () => {
+const Recharge = () => {
     const location = useLocation();
     const character_chat = location.state?.character;
     const { id } = useParams();
     const navigate = useNavigate(); 
     const [character, setCharacter] = useState({});
     const { currentUser } = useContext(AuthContext); 
-    // useEffect(() => {
-    //     const fetchCharacter = async () => {
-    //         try {
-    //             const response = await fetch(`${serverUrl}/api/characters/${id}`, {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     "Authorization": "Bearer " + localStorage.getItem("token")
-    //                 }
-    //             });
-    //             const data = await response.json();
-    //             setCharacter(data);
-    //         } catch (error) {
-    //             console.log("error", error);
-    //         }
-    //     }
+    const [selectedPackage, setSelectedPackage] = useState(null);
+    const [money,setMoney] = useState('')
+    const [content, setContent] =useState('')
+      const [paymentMethod, setPaymentMethod] = useState(null);
+     const [isVisible, setIsVisible] = useState(false);
+     const [responseData, setResponseData] = useState(null);
+     const [generatedVariable, setGeneratedVariable] = useState("");
+   
+     const[isSuccess, setIsSuccess] = useState(false)
+     let intervalId = null;
+     const handleSelectPackage = (pkg) => {
+        setSelectedPackage(pkg);
+        setMoney(pkg.price)
+        setContent(pkg.content)
 
-    //     fetchCharacter();
-    // }, [id]);
-
-    const [paymentMethod, setPaymentMethod] = useState(null);
-    const handleClick = async () => {
+    };
+    useEffect(() => {
+        // Tạo biến tự phát sinh mỗi lần trang được tải lại
+        const newVariable = uuidv4(); // Hoặc sử dụng Date.now(), Math.random(), tùy ý
+        const newVariableWithoutDashes = newVariable.replace(/-/g, ""); 
+        setGeneratedVariable(newVariableWithoutDashes);
+        console.log("Biến tự phát sinh:", newVariableWithoutDashes);
+      }, []); // [] đảm bảo chỉ chạy khi component được mount
+    const callApi = async () => {
+   
         try {
-          // Gọi API
-          const response = await axios.post(
-            `${config.API_BASE_URL}/api/v1/characters/buy-character/${character_chat.id}`,
-            {},  // Nếu có body dữ liệu cần gửi, có thể truyền ở đây
-            {
-              headers: {
-                Authorization:  `Bearer ${currentUser.access_token}`, // Thêm token vào header
-              },
-            }
+          const response = await axios.get(
+            "https://script.google.com/macros/s/AKfycbyWRhn_7Fti5e8xHXXCk7RFANsCO9u19ws_aoVQAkKyPY-ca9KT1-N8iop76w8rQxxerw/exec"
           );
-          navigate('/'); 
-          
-        } catch (err) {
-          
-          console.error(err);
-        }
+          if (response.data.data) {
+            setResponseData(response.data.data);
+            console.log("Dữ liệu trả về:", response.data.data);
+            const data = response.data.data;
+            const lastElement = data[data.length - 1]; 
+            console.log("nguoi dung cuoi", lastElement)
+            const last_Content =lastElement["Mô tả"]
+            console.log("noi dung cuoi", last_Content)
+            console.log("day la noi dung so sanh: ",generatedVariable)
+            if (last_Content.includes(generatedVariable)) {
+                setIsSuccess(true); // Cập nhật isSuccess thành true
+                clearInterval(intervalId); // Dừng việc gọi API sau khi đạt yêu cầu
+                console.log("Đã tìm thấy dữ liệu khớp!");
+              }
+          } else {
+            console.error("Dữ liệu trả về không hợp lệ!");
+          }
+        } catch (error) {
+          console.error("Lỗi khi gọi API:", error);
+        } 
       };
+    const handlePayment = async () => {
+        if (!selectedPackage) {
+            alert("Vui lòng chọn gói thanh toán!");
+           
+            return;
+        }
+        console.log("Phương thức thanh toán:", paymentMethod);
+        console.log("Thanh toán gói:", selectedPackage);
+        
+        setIsVisible(true);
+          // Gọi API ngay khi bấm nút
+     
+    callApi();
 
+    // Thiết lập lặp lại mỗi 15 giây
+    intervalId = setInterval(callApi, 15000);
+    };
+    const closePaymentInfo = () => {
+        setIsVisible(false);
+    };
+    const qrCodeUrl = `https://img.vietqr.io/image/${my_bank.BANK_ID}-${my_bank.ACCOUNT_NO}-compact2.png?amount=${money}&addInfo=${generatedVariable}&accountName=${my_bank.NAME}`
     return (
         <div className="payment-page">
             <div className="payment-page-container">
-                {/* <Link to={`../../`} className="back-link">
-                    <div className="payment-page__header">
-                        <div className="payment-page__header__back">
-                            <FontAwesomeIcon icon={faChevronLeft} />
-                        </div>
-                        <span className="payment-page__header__title">Quay lại Trang chủ</span>
-                    </div>
-                </Link> */}
-                <div className="payment-page__row">
-                    <div className="payment-page-row__info-character">
-                        <div className="payment-page__info-character__img">
-                            <img src={character_chat.profile_image} alt="character" />
-                        </div>
-                        <div className="payment-page__info-character__name">
-                            {character_chat.name}
-                        </div>
-                    </div>
-                    <div className="payment-page-row__line-separate"></div>
-                    <div className="payment-page-row__price">
-                        Giá: {character_chat.new_price}
-                        
-                        <img src={coinImage} alt="Product Image" class="product-image"></img>
-                    </div>
-                </div>
-                <div className="payment-page__center-button">
-                    <button className="payment-page__center-button__btn" onClick={handleClick}>Mua</button>
-                </div>
+
                 <div className="payment-page__content">
                     <div className="payment-page__content__title">
-                        Nạp tiền vào ví
+                        Chọn phương thức thanh toán
                     </div>
                     <div className="payment-page__content__methods">
                         {paymentMethods.map(method => (
@@ -142,10 +182,45 @@ const PaymentPage = () => {
                             </div>
                         ))}
                     </div>
+
+                     {/* Hiển thị bảng giá nếu đã chọn phương thức thanh toán */}
+                     {paymentMethod && (
+                        <div className="payment-page__pricing">
+                            <h3>Chọn gói thanh toán</h3>
+                            <div className="payment-packages">
+                                {paymentPackages.map(pkg => (
+                                    <div
+                                        key={pkg.id}
+                                        className={`payment-package ${selectedPackage?.id === pkg.id ? "selected" : ""}`}
+                                        onClick={() => handleSelectPackage(pkg)}
+                                    >
+                                        <p>{pkg.coins.toLocaleString('vi-VN')} Coins</p>
+                                        <p>{toVND(pkg.price)}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <button className="payment-button" onClick={handlePayment}>
+                                Nạp tiền
+                            </button>
+                            {isVisible && (
+                <div className="payment-info">
+                    <div className="payment-details">
+                        <button className="close-button" onClick={closePaymentInfo}>X</button>
+                        <h2>Thông tin thanh toán</h2>
+                  
+                        <div className="qr-code">
+                            {/* Chèn mã QR ngân hàng ở đây */}
+                            <img src={qrCodeUrl} alt="QR Code" />
+                        </div>
+                    </div>
+                </div>
+            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
 }
 
-export default PaymentPage;
+export default Recharge;

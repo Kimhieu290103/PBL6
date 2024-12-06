@@ -149,10 +149,10 @@ const DaiVietChat = () => {
             );
     
             console.log("Feedback sent successfully:", response.data);
-            alert("Cảm ơn bạn đã phản hồi!");
+           
         } catch (error) {
             console.error("Error sending feedback:", error);
-            alert("Đã xảy ra lỗi khi gửi phản hồi!");
+           
         }
     };
     

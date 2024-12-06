@@ -34,7 +34,10 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="container">
+    <div className="hange-password-page" >
+    <div className="container" style={{
+      width: '28%'
+    }}>
       <h2>Đổi Mật Khẩu</h2>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
@@ -75,6 +78,7 @@ const ChangePassword = () => {
         }} type="submit">Đổi Mật Khẩu</button>
       </form>
       {message && <p className="message">{message}</p>}
+    </div>
     </div>
   );
 };
